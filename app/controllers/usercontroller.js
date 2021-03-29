@@ -15,11 +15,11 @@ var upload = multer({ storage: _storage, limits:{fileSize: 1024 * 1024 * 5} }).s
 
 exports.register = (req, res) => {
   const user = {
-    userName: req.body.name,
+    userName: req.body.userName,
     email: req.body.email,
     password: req.body.password,
-    lifeStyle: req.body.lifestyle,
-    journeyType: req.body.journeytype,
+    lifeStyle: req.body.lifeStyle,
+    journeyType: req.body.journeyType,
   };
 
   Users.create(user)
