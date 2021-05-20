@@ -5,6 +5,10 @@ module.exports = (app) => {
   const scrap = require("../controllers/scrapcontroller.js");
   const { auth } = require("../middleware/auth.js");
   var router = require("express").Router();
+  // const cors = require("cors");
+  // app.use(cors({ origin: "http://localhost:3000/" }));
+  const cors = require('cors')
+  app.use(cors())
 
   router.post("/api/user/register", user.register);
 
