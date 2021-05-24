@@ -36,43 +36,69 @@ exports.register = (req, res) => {
 exports.login = (req, res) => {
   //요청된 이메일을 데이터베이스에 있는지 찾는다
   Users.findOne({ where: { email: req.body.email } }).then((userInfo) => {
-    if (userInfo === null) {
+    if (!userInfo) {
       return res.send({
-        NoExistedUser: true
+        NoExistedUser: true,
+        message: '해당 이메일을 사용하는 사용자가 없습니다.'
       });
     }
+
+    //요청된 이메일이 데이터베이스에 있다면 비밀번호 맞는지 확인
     else {
       userInfo.comparePassword(req.body.password, (err, isMatch) => {
-        if (!isMatch) {
+        if (!isMatch) { //비밀번호가 틀린경우
           return res.json({
             isLogin: false,
+            message: '비밀번호가 틀렸습니다.'
           });
         }
         else {
-          userInfo.generateToken((err, tok) => {
-            //토큰을 쿠키, 로컬스토리지, 아무튼 여러군데 저장 가능
-            Users.update({ token: tok }, 
-              { 
-                where: { email: req.body.email }, 
-                returning: true,
-                plain: true
-              })
-              .then((result) => {
-                res.cookie("x_auth", tok).status(200).json({
+
+          userInfo.generateToken((err, user)=> {
+            if(err) return res.status(400).send(err)
+
+            //토큰을 쿠키나 로컬스토리지 등에 저장가능
+            res.cookie("x_auth", user.token).status(200)
+                .json({
                   isLogin: true,
-                  userId: result[1].id,
-                  userName: result[1].userName,
-                  lifeStyle: result[1].lifeStyle,
-                  journeyType: result[1].journeyType,
-                  userImg: result[1].image,
-                  token: result[1].token
-                });
-              })
-              .catch((err) => {
-                return res.status(400).send(err);
-              });
-          });
-        }
+                  userId: user.id,
+                  userName: user.userName,
+                  lifeStyle: user.lifeStyle,
+                  journeyType: user.journeyType,
+                  userImg: user.image,
+                  token: user.token})
+          })
+
+          // 비밀번호까지 맞다면 토큰을 생성하기
+          // userInfo.generateToken((err, tok) => {
+          //   //토큰생성에러
+          //   if(err) return res.status(400).send(err)
+          //
+          //   //토큰을 쿠키, 로컬스토리지, 아무튼 여러군데 저장 가능
+          //   Users.update({ token: tok },
+          //     {
+          //       where: { email: req.body.email },
+          //       returning: true,
+          //       plain: true
+          //     })
+          //     .then((result) => {
+          //       console.log(userInfo.token+'요기요')
+          //       res.cookie("x_auth", tok).status(200).json({
+          //         isLogin: true,
+          //         userId: result[1].id,
+          //         userName: result[1].userName,
+          //         lifeStyle: result[1].lifeStyle,
+          //         journeyType: result[1].journeyType,
+          //         userImg: result[1].image,
+          //         token: result[1].token
+          //       });
+          //     })
+          //     .catch((err) => {
+          //       return res.status(400).send(err);
+          //     });
+          // });
+
+        } // else
       });
     }
   })
@@ -104,7 +130,7 @@ exports.logout = (req, res) => {
       return res.status(200).send({ success: true });
     })
     .catch((err) => {
-      return res.status(400).send(err);
+      return res.status(400).send(err)  ;
     });
 };
 

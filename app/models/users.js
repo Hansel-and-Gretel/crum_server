@@ -53,16 +53,31 @@ module.exports = (sequelize, Sequelize) => {
 
 
   Users.prototype.comparePassword = function (plainPassword, cb) {
+      //제공된 패스워드와 암호화된 패스워드 일치하는지 확인하기
+      //받아온 패스워드를 함호화해서 저장된 패스워드와 비교
+
     bcrypt.compare(plainPassword, this.password, function (err, isMatch) {
-      if (err) return cb(err, false);
-      return cb(null, isMatch);
+      if (err) {
+          return cb(err, false)
+      }
+      return cb(null, isMatch)
     });
   };
 
   Users.prototype.generateToken = function (cb) {
     //jsonwebtoken을 이용해서 token을 생성하기
     var token = jwt.sign(this.id, "secretToken");
-    return cb(null, token);
+    /* 사용자 토큰 업데이트 */
+    // var user = this;
+    // user.token = token;
+    // user.save(function(err, user){
+    //     if(err){
+    //         return cb(err)
+    //     }
+    //     return cb(null, user)
+    // })
+    //   //
+    return cb(null, this);
   };
 
   Users.findByToken = function (token, cb) {

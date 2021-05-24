@@ -20,6 +20,11 @@ db.sequelize.sync();
 //  console.log("Drop and re-sync db.");
 // });
 
+/* CORS */
+// const cors = require("cors");
+// app.use(cors({ origin: "http://localhost:3000/" }));
+const cors = require('cors')
+app.use(cors())
 require("./app/routes/route")(app);
 
 // set port, listen for requests

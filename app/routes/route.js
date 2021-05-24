@@ -5,14 +5,10 @@ module.exports = (app) => {
   const scrap = require("../controllers/scrapcontroller.js");
   const { auth } = require("../middleware/auth.js");
   var router = require("express").Router();
-  // const cors = require("cors");
-  // app.use(cors({ origin: "http://localhost:3000/" }));
-  const cors = require('cors')
-  app.use(cors())
 
-  router.post("/api/user/register", user.register);
+  router.post("/api/user/register", user.register); //
 
-  router.post("/api/user/login", user.login);
+  router.post("/api/user/login", user.login); //
 
   router.post("/api/user/profile-upload", user.profileUpload);
 
@@ -20,9 +16,9 @@ module.exports = (app) => {
 
   router.get("/api/user/user-info/:id", user.getUserInfo);
 
-  router.get("/api/user/auth", auth, user.auth);
+  router.get("/api/user/auth", auth, user.auth); //authentication
 
-  router.get("/api/user/logout", auth, user.logout);
+  router.get("/api/user/logout", auth, user.logout); //
 
   router.get("/api/journey/main", journey.publicJour);
 
