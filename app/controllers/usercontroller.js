@@ -38,11 +38,10 @@ exports.login = (req, res) => {
   Users.findOne({ where: { email: req.body.email } }).then((userInfo) => {
     if (!userInfo) {
       return res.send({
-        NoExistedUser: true,
+        isLogin: true,
         message: '해당 이메일을 사용하는 사용자가 없습니다.'
       });
     }
-
     //요청된 이메일이 데이터베이스에 있다면 비밀번호 맞는지 확인
     else {
       userInfo.comparePassword(req.body.password, (err, isMatch) => {
@@ -61,12 +60,16 @@ exports.login = (req, res) => {
             res.cookie("x_auth", user.token).status(200)
                 .json({
                   isLogin: true,
-                  userId: user.id,
-                  userName: user.userName,
-                  lifeStyle: user.lifeStyle,
-                  journeyType: user.journeyType,
-                  userImg: user.image,
-                  token: user.token})
+                  message: '성공적으로 로그인 되었습니다.',
+                  user: {
+                    userId: user.id,
+                    userName: user.userName,
+                    lifeStyle: user.lifeStyle,
+                    journeyType: user.journeyType,
+                    userImg: user.image,
+                    token: user.token
+                  }
+                  })
           })
 
           // 비밀번호까지 맞다면 토큰을 생성하기

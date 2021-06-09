@@ -68,15 +68,15 @@ module.exports = (sequelize, Sequelize) => {
     //jsonwebtoken을 이용해서 token을 생성하기
     var token = jwt.sign(this.id, "secretToken");
     /* 사용자 토큰 업데이트 */
-    // var user = this;
-    // user.token = token;
-    // user.save(function(err, user){
-    //     if(err){
-    //         return cb(err)
-    //     }
-    //     return cb(null, user)
-    // })
-    //   //
+    var user = this;
+    user.token = token;
+    user.save(function(err, user){
+        if(err){
+            return cb(err)
+        }
+        return cb(null, user)
+    })
+      //
     return cb(null, this);
   };
 
