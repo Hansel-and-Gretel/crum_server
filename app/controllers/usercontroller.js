@@ -116,12 +116,22 @@ exports.login = (req, res) => {
 exports.auth = (req, res) => {
   //여기까지 미들웨어를 통과해서 왔다 == Authentication이 true
   res.status(200).json({
-    isAuth: true,
-    userId: req.user.id,
-    userName:req.user.userName,
-    userImg: req.user.image,
-    journeyType: req.user.journeyType,
-    lifeStyle: req.user.lifeStyle
+    isLogin: true,
+    message: '성공적으로 사용자 정보를 가져옵니다.',
+    user: {
+      userId: req.user.id,
+      userName: req.user.userName,
+      lifeStyle: req.user.lifeStyle,
+      journeyType: req.user.journeyType,
+      userImg: req.user.image,
+      token: req.user.token
+    }
+    // isAuth: true,
+    // userId: req.user.id,
+    // userName:req.user.userName,
+    // userImg: req.user.image,
+    // journeyType: req.user.journeyType,
+    // lifeStyle: req.user.lifeStyle
   });
 };
 
@@ -130,7 +140,7 @@ exports.logout = (req, res) => {
 
   Users.update({ token: "" }, { where: { id: req.user.id } })
     .then(() => {
-      return res.status(200).send({ success: true });
+      return res.status(200).send({ logoutSuccess: true });
     })
     .catch((err) => {
       return res.status(400).send(err)  ;
@@ -158,7 +168,7 @@ exports.profileUpload = (req, res, next) => {
     .then(() => {return res.status(200).send({editProfile: true})})
     .catch((err) => {
       return res.status(400).send(err);
-  });
+    });
     next();
   });
 };
@@ -179,3 +189,22 @@ exports.getUserInfo = (req, res) => {
   })
 
 }
+
+exports.userStyleUpdate = (req, res) => {
+  upload(req, res, function (err) {
+    if (err){
+      console.log(JSON.stringify(err));
+      return res.status(400).send('fail to update user style');
+    }
+    Users.update({
+      lifeStyle: res.req.body.lifeStyle,
+      journeyType: res.req.body.journeyType
+    }, {where: {id: res.req.body.userId}})
+        .then(() => {return res.status(200).send({
+          userStyleUpdate: true
+        })})
+        .catch((err) => {
+          return res.status(400).send(err);
+        });
+  });
+};

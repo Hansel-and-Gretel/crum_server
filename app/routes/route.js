@@ -5,12 +5,15 @@ module.exports = (app) => {
   const scrap = require("../controllers/scrapcontroller.js");
   const { auth } = require("../middleware/auth.js");
   var router = require("express").Router();
+  const uploadImg = require("../middleware/uploadImg")
 
   router.post("/api/user/register", user.register); //
 
   router.post("/api/user/login", user.login); //
 
   router.post("/api/user/profile-upload", user.profileUpload);
+
+  router.post("/api/user/update", user.userStyleUpdate);
 
   //router.post("/api/user/profile", user.profileEdit);
 
@@ -30,7 +33,7 @@ module.exports = (app) => {
 
   router.get("/api/journey/detail/:id", journey.jourDetail);
 
-  router.post("/api/journey/upload", journey.journeyUpload);
+  router.post("/api/journey/upload", uploadImg, journey.journeyUpload );
 
   router.post("/api/follow/follow-check", follow.followCheck);
 
