@@ -15,11 +15,11 @@ var upload = multer({ storage: _storage, limits:{fileSize: 1024 * 1024 * 5} }).s
 
 exports.register = (req, res) => {
   const user = {
-    userName: req.body.name,
+    userName: req.body.userName,
     email: req.body.email,
     password: req.body.password,
-    lifeStyle: req.body.lifestyle,
-    journeyType: req.body.journeytype,
+    lifeStyle: req.body.lifeStyle,
+    journeyType: req.body.journeyType,
   };
 
   Users.create(user)
@@ -36,43 +36,72 @@ exports.register = (req, res) => {
 exports.login = (req, res) => {
   //요청된 이메일을 데이터베이스에 있는지 찾는다
   Users.findOne({ where: { email: req.body.email } }).then((userInfo) => {
-    if (userInfo === null) {
+    if (!userInfo) {
       return res.send({
-        NoExistedUser: true
+        isLogin: true,
+        message: '해당 이메일을 사용하는 사용자가 없습니다.'
       });
     }
+    //요청된 이메일이 데이터베이스에 있다면 비밀번호 맞는지 확인
     else {
       userInfo.comparePassword(req.body.password, (err, isMatch) => {
-        if (!isMatch) {
+        if (!isMatch) { //비밀번호가 틀린경우
           return res.json({
             isLogin: false,
+            message: '비밀번호가 틀렸습니다.'
           });
         }
         else {
-          userInfo.generateToken((err, tok) => {
-            //토큰을 쿠키, 로컬스토리지, 아무튼 여러군데 저장 가능
-            Users.update({ token: tok }, 
-              { 
-                where: { email: req.body.email }, 
-                returning: true,
-                plain: true
-              })
-              .then((result) => {
-                res.cookie("x_auth", tok).status(200).json({
+
+          userInfo.generateToken((err, user)=> {
+            if(err) return res.status(400).send(err)
+
+            //토큰을 쿠키나 로컬스토리지 등에 저장가능
+            res.cookie("x_auth", user.token).status(200)
+                .json({
                   isLogin: true,
-                  userId: result[1].id,
-                  userName: result[1].userName,
-                  lifeStyle: result[1].lifeStyle,
-                  journeyType: result[1].journeyType,
-                  userImg: result[1].image,
-                  token: result[1].token
-                });
-              })
-              .catch((err) => {
-                return res.status(400).send(err);
-              });
-          });
-        }
+                  message: '성공적으로 로그인 되었습니다.',
+                  user: {
+                    userId: user.id,
+                    userName: user.userName,
+                    lifeStyle: user.lifeStyle,
+                    journeyType: user.journeyType,
+                    userImg: user.image,
+                    token: user.token
+                  }
+                  })
+          })
+
+          // 비밀번호까지 맞다면 토큰을 생성하기
+          // userInfo.generateToken((err, tok) => {
+          //   //토큰생성에러
+          //   if(err) return res.status(400).send(err)
+          //
+          //   //토큰을 쿠키, 로컬스토리지, 아무튼 여러군데 저장 가능
+          //   Users.update({ token: tok },
+          //     {
+          //       where: { email: req.body.email },
+          //       returning: true,
+          //       plain: true
+          //     })
+          //     .then((result) => {
+          //       console.log(userInfo.token+'요기요')
+          //       res.cookie("x_auth", tok).status(200).json({
+          //         isLogin: true,
+          //         userId: result[1].id,
+          //         userName: result[1].userName,
+          //         lifeStyle: result[1].lifeStyle,
+          //         journeyType: result[1].journeyType,
+          //         userImg: result[1].image,
+          //         token: result[1].token
+          //       });
+          //     })
+          //     .catch((err) => {
+          //       return res.status(400).send(err);
+          //     });
+          // });
+
+        } // else
       });
     }
   })
@@ -87,12 +116,22 @@ exports.login = (req, res) => {
 exports.auth = (req, res) => {
   //여기까지 미들웨어를 통과해서 왔다 == Authentication이 true
   res.status(200).json({
-    isAuth: true,
-    userId: req.user.id,
-    userName:req.user.userName,
-    userImg: req.user.image,
-    journeyType: req.user.journeyType,
-    lifeStyle: req.user.lifeStyle
+    isLogin: true,
+    message: '성공적으로 사용자 정보를 가져옵니다.',
+    user: {
+      userId: req.user.id,
+      userName: req.user.userName,
+      lifeStyle: req.user.lifeStyle,
+      journeyType: req.user.journeyType,
+      userImg: req.user.image,
+      token: req.user.token
+    }
+    // isAuth: true,
+    // userId: req.user.id,
+    // userName:req.user.userName,
+    // userImg: req.user.image,
+    // journeyType: req.user.journeyType,
+    // lifeStyle: req.user.lifeStyle
   });
 };
 
@@ -101,10 +140,10 @@ exports.logout = (req, res) => {
 
   Users.update({ token: "" }, { where: { id: req.user.id } })
     .then(() => {
-      return res.status(200).send({ success: true });
+      return res.status(200).send({ logoutSuccess: true });
     })
     .catch((err) => {
-      return res.status(400).send(err);
+      return res.status(400).send(err)  ;
     });
 };
 
@@ -129,7 +168,7 @@ exports.profileUpload = (req, res, next) => {
     .then(() => {return res.status(200).send({editProfile: true})})
     .catch((err) => {
       return res.status(400).send(err);
-  });
+    });
     next();
   });
 };
@@ -150,3 +189,22 @@ exports.getUserInfo = (req, res) => {
   })
 
 }
+
+exports.userStyleUpdate = (req, res) => {
+  upload(req, res, function (err) {
+    if (err){
+      console.log(JSON.stringify(err));
+      return res.status(400).send('fail to update user style');
+    }
+    Users.update({
+      lifeStyle: res.req.body.lifeStyle,
+      journeyType: res.req.body.journeyType
+    }, {where: {id: res.req.body.userId}})
+        .then(() => {return res.status(200).send({
+          userStyleUpdate: true
+        })})
+        .catch((err) => {
+          return res.status(400).send(err);
+        });
+  });
+};

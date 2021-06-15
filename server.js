@@ -15,11 +15,30 @@ app.use("/image", express.static("uploads"));
 const db = require("./app/models");
 //prod
 db.sequelize.sync();
+
 //dev
 // db.sequelize.sync({ force: true }).then(() => {
 //  console.log("Drop and re-sync db.");
 // });
 
+/* CORS */
+// const cors = require("cors");
+// app.use(cors({ origin: "http://localhost:3000/" }));
+// const cors = require("cors")
+// app.use(cors())
+
+const cors = require('cors');
+
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+// const cors = require('cors');
+// const corsOptions = {
+//   origin: "http://localhost:3000/",
+//   credentials: true
+// }
+// app.use(cors(corsOptions));
 require("./app/routes/route")(app);
 
 // set port, listen for requests
