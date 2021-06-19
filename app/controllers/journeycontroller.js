@@ -6,7 +6,7 @@ let currentDate = new Date()
 
 exports.journeyUpload = async (req, res) => {
 
-        var imagePath = '';
+        let imagePath = '';
         if(!req.file.filename) {
             imagePath = "/image/journey/default.png";
         }
@@ -32,7 +32,7 @@ exports.journeyUpload = async (req, res) => {
         // journey create
         try {
             const journeyCreate = await Journeys.create(journey)
-            return res.status(200).json({ uploadSuccess: true, journey: journey })
+            return res.status(200).json({ uploadSuccess: true, journey: journeyCreate })
         } catch (err) {
             console.log("Journey 업로드에 에러가 발생했습니다 : ", err);
             return "Unknown";

@@ -3,10 +3,10 @@ module.exports = (sequelize, Sequelize) => {
       "places",
       {
         placeName: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING(50),
           allowNull: false,
         },
-        time: {
+        pinTime: {
           type: Sequelize.STRING(50),
           allowNull: false,
         },
@@ -58,7 +58,8 @@ module.exports = (sequelize, Sequelize) => {
         }
       },
       {
-        timestamps: false,
+        id: true,
+        timestamps: true,
       }
     );
     
