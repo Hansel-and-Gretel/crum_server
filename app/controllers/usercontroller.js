@@ -147,31 +147,57 @@ exports.logout = (req, res) => {
     });
 };
 
-exports.profileUpload = (req, res, next) => {
-  upload(req, res, function (err) {
-    var imagePath = "";
-    if (err){
-      console.log(JSON.stringify(err));
-      return res.status(400).send('fail saving image');
-    } 
-    
-    if(res.req.body.default === "true") {
-      imagePath = "/image/profile/default.png";
-    }
-    else {
-      imagePath = `/image/profile/${res.req.file.filename}`;
-    }
+// exports.profileUpload = (req, res, next) => {
+//   upload(req, res, function (err) {
+//     let imagePath = "";
+//     if(!req.file.filename) {
+//       imagePath = "/image/profile/default.png";
+//     }
+//     else {
+//       imagePath = `/image/profile/${res.req.file.filename}`;
+//     }
+//
+//     Users.update({
+//       image: imagePath
+//     }, {where: {id: res.req.body.userId}})
+//     .then(() => {return res.status(200).send({editProfile: true})})
+//     .catch((err) => {
+//       return res.status(400).send(err);
+//     });
+//     next();
+//   });
+// };
 
-    Users.update({
-      image: imagePath
-    }, {where: {id: res.req.body.userId}})
-    .then(() => {return res.status(200).send({editProfile: true})})
-    .catch((err) => {
-      return res.status(400).send(err);
-    });
-    next();
-  });
-};
+exports.profileUpload = async (req, res) => {
+
+  let imagePath = "";
+
+  console.log(req)
+
+  if(!req.file.filename) {
+    imagePath = "/image/profile/default.png";
+  }
+  else {
+    imagePath = `/image/profile/${res.req.file.filename}`;
+  }
+
+  try {
+    const profileUpload = await Users.update(
+        {
+          image: imagePath
+        },
+        {where: {id: res.req.body.userId}}
+    )
+    return res.status(200).json({ uploadSuccess: true})
+  } catch (err) {
+    console.log("place 업로드에 에러가 발생했습니다 : ", err);
+    return "Unknown";
+  }
+
+}
+
+
+
 
 exports.getUserInfo = (req, res) => {
   Users.findByPk(req.params.id)

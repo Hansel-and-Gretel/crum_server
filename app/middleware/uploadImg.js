@@ -9,7 +9,7 @@ const imageFilter = (req, file, cb) => {
     cb(null, true);
 };
 
-var storage = multer.diskStorage({
+let storageJourney = multer.diskStorage({
     destination: function(req, file, cb){
         cb(null, "uploads/journey/");
     },
@@ -18,8 +18,31 @@ var storage = multer.diskStorage({
     }
 });
 
-var uploadFile = multer({ storage: storage, fileFilter: imageFilter }).single(
+let storagePlace = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, "uploads/place/");
+    },
+    filename: function(req, file, cb){
+        cb(null, "PLACE-" + Date.now() + path.extname(file.originalname));
+    }
+});
+
+let storageProfile = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, "uploads/profile/");
+    },
+    filename: function(req, file, cb){
+        cb(null, "PROFILE-" + Date.now() + path.extname(file.originalname));
+    }
+});
+
+exports.uploadJourneyImage = multer({ storage: storageJourney, fileFilter: imageFilter }).single(
     // 프론트에서 넘겨울 params key 값, 오른쪽 같이 넘겨줘야함-> {photo: binary}
     "image"
 );
-module.exports = uploadFile;
+exports.uploadPlaceImage = multer({ storage: storagePlace, fileFilter: imageFilter }).single(
+    "image"
+);
+exports.uploadProfileImage = multer({ storage: storageProfile, fileFilter: imageFilter }).single(
+    "image"
+);

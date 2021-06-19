@@ -23,7 +23,14 @@ module.exports = (app) => {
 
   router.get("/api/user/logout", auth, user.logout); //
 
+  // 전체 - 최근 등록순
   router.get("/api/journey/main", journey.publicJour);
+
+  // 스타일 별
+  router.get("/api/journey/style/:type", journey.jourByStyle);
+
+  // 동행 타입으로
+  router.get("/api/journey/accompany/:accompany", journey.jourByAccompany);
 
   router.get("/api/journey/follow-journey/:id", journey.followJourney);
 
