@@ -54,7 +54,7 @@ module.exports = (sequelize, Sequelize) => {
         }
       },
       {
-          id: true,
+        id: true,
         timestamps: true,
       }
     );

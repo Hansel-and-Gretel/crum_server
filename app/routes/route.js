@@ -1,17 +1,19 @@
 module.exports = (app) => {
   const user = require("../controllers/usercontroller.js");
   const journey = require("../controllers/journeycontroller.js");
+  const place = require("../controllers/placecontroller.js");
   const follow = require("../controllers/followcontroller.js");
   const scrap = require("../controllers/scrapcontroller.js");
   const { auth } = require("../middleware/auth.js");
   var router = require("express").Router();
   const uploadImg = require("../middleware/uploadImg")
 
+  /** USER **/
   router.post("/api/user/register", user.register); //
 
   router.post("/api/user/login", user.login); //
 
-  router.post("/api/user/profile-upload", user.profileUpload);
+  router.post("/api/user/profile-upload", uploadImg.uploadProfileImage, user.profileUpload);
 
   router.post("/api/user/update", user.userStyleUpdate);
 
@@ -23,12 +25,11 @@ module.exports = (app) => {
 
   router.get("/api/user/logout", auth, user.logout); //
 
+  /** JOURNEY **/
   // 전체 - 최근 등록순
   router.get("/api/journey/main", journey.publicJour);
-
   // 스타일 별
   router.get("/api/journey/style/:type", journey.jourByStyle);
-
   // 동행 타입으로
   router.get("/api/journey/accompany/:accompany", journey.jourByAccompany);
 
@@ -40,8 +41,17 @@ module.exports = (app) => {
 
   router.get("/api/journey/detail/:id", journey.jourDetail);
 
-  router.post("/api/journey/upload", uploadImg, journey.journeyUpload );
+  router.post("/api/journey/upload", uploadImg.uploadJourneyImage, journey.journeyUpload );
 
+
+  /** PLACE **/
+  router.post("/api/place/upload", uploadImg.uploadPlaceImage, place.placeUpload );
+  router.get("/api/place/all", place.allPlaces );
+  router.get("/api/place/journey/:journeysId", place.placesByJour );
+
+
+
+  /** FOLLOW **/
   router.post("/api/follow/follow-check", follow.followCheck);
 
   router.post("/api/follow/set-follow", follow.setFollow);
@@ -56,6 +66,8 @@ module.exports = (app) => {
 
   router.get("/api/follow/count-follower/:id", follow.countFollower);
 
+
+  /** SCRAP **/
   router.post("/api/scrap/scrap-check", scrap.scrapCheck);
 
   router.post("/api/scrap/set-scrap", scrap.setScrap);
