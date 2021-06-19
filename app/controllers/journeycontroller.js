@@ -43,13 +43,38 @@ exports.journeyUpload = async (req, res) => {
 exports.publicJour = (req, res) => {
     Journeys.findAll({
         where: {sharedFlag: true},
-        limit: 2,
+        limit: 1000,
         order: [["id", "DESC"]]
     }).then((jourInfo) => {
         return res.status(200).send(jourInfo);
     })
     .catch((err) => {return res.status(400).send(err);})
 }
+
+
+exports.jourByStyle = (req, res) => {
+    Journeys.findAll({
+        where: {type: req.params.type},
+        limit: 100,
+        order: [["id", "DESC"]]
+    }).then((jourInfo) => {
+        return res.status(200).send(jourInfo);
+    }).catch((err) => {
+        return res.status(400).send(err);
+    })
+}
+
+exports.jourByAccompany = (req, res) => {
+    Journeys.findAll({
+        where: {accompany: req.params.accompany},
+        limit: 100,
+        order: [["id", "DESC"]]
+    }).then((jourInfo) => {
+        return res.status(200).send(jourInfo);
+    }).catch((err) => {return res.status(400).send(err);})
+}
+
+
 
 exports.jourDetail = (req, res) => {
     Journeys.findByPk(req.params.id).then((jourInfo) => {
