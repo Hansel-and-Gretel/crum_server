@@ -17,7 +17,7 @@ module.exports = (app) => {
 
   router.post("/api/user/update", user.userStyleUpdate);
 
-  //router.post("/api/user/profile", user.profileEdit);
+  // router.post("/api/user/profile", user.profileEdit);
 
   router.get("/api/user/user-info/:id", user.getUserInfo);
 
@@ -46,7 +46,9 @@ module.exports = (app) => {
 
   /** PLACE **/
   router.post("/api/place/upload", uploadImg.uploadPlaceImage, place.placeUpload );
-  router.get("/api/place/all", place.allPlaces );
+
+  router.get("/api/place/list", place.allPlaces );
+
   router.get("/api/place/journey/:journeysId", place.placesByJour );
 
 
