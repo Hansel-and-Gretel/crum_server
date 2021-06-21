@@ -3,7 +3,6 @@ const Places = db.places;
 const path = require("path");
 let currentDate = new Date()
 
-
 exports.placeUpload = async (req, res) => {
 
     let imagePath = '';
@@ -13,7 +12,6 @@ exports.placeUpload = async (req, res) => {
     else {
         imagePath = `/image/place/${req.file.filename}`;
     }
-
 
     const place = {
         placeName: req.body.placeName,
@@ -29,8 +27,6 @@ exports.placeUpload = async (req, res) => {
         userName: req.body.userName,
     };
 
-
-    // journey create
     try {
         const placeCreate = await Places.create(place)
         return res.status(200).json({ uploadSuccess: true, place: placeCreate })
