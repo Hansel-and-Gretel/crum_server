@@ -38,7 +38,7 @@ exports.login = (req, res) => {
   Users.findOne({ where: { email: req.body.email } }).then((userInfo) => {
     if (!userInfo) {
       return res.send({
-        isLogin: true,
+        isLogin: false,
         message: '해당 이메일을 사용하는 사용자가 없습니다.'
       });
     }
@@ -190,7 +190,7 @@ exports.profileUpload = async (req, res) => {
     )
     return res.status(200).json({ uploadSuccess: true})
   } catch (err) {
-    console.log("place 업로드에 에러가 발생했습니다 : ", err);
+    console.log("profile 업로드에 에러가 발생했습니다 : ", err);
     return "Unknown";
   }
 

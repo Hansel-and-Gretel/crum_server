@@ -47,6 +47,8 @@ module.exports = (app) => {
   /** PLACE **/
   router.post("/api/place/upload", uploadImg.uploadPlaceImage, place.placeUpload );
 
+  router.post("/api/place/update", uploadImg.uploadPlaceImage, place.placeUpdate );
+
   router.get("/api/place/list", place.allPlaces );
 
   router.get("/api/place/journey/:journeysId", place.placesByJour );
