@@ -5,13 +5,14 @@ let currentDate = new Date()
 
 exports.placeUpload = async (req, res) => {
 
+    console.log(req)
     let imagePath = '';
-    if(!req.file.filename) {
-        imagePath = "/image/place/default.png";
-    }
-    else {
-        imagePath = `/image/place/${req.file.filename}`;
-    }
+    // if(!req.file) {
+    //     imagePath = "/image/place/default.png";
+    // }
+    // if(req.file.filename) {
+    //     imagePath = `/image/place/${req.file.filename}`;
+    // }
 
     const place = {
         placeName: req.body.placeName,
@@ -32,7 +33,7 @@ exports.placeUpload = async (req, res) => {
         return res.status(200).json({ uploadSuccess: true, place: placeCreate })
     } catch (err) {
         console.log("place 업로드에 에러가 발생했습니다 : ", err);
-        return "Unknown";
+        return res.status(200).json({ uploadSuccess: false, comment: err });
     }
 
 }
